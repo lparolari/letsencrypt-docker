@@ -1,0 +1,33 @@
+server {
+    listen 80;
+
+    server_name YOUR_SERVER_NAME;
+
+    location / {
+        return 301 https://$host$request_uri;
+    }
+
+    location /.well-known/acme-challenge/ {
+        root /var/www/certbot;
+    }
+}
+server {
+    listen 443 ssl;
+    server_name YOUR_SERVER_NAME;
+
+    location / {
+        return 200 'OK';
+        # because default content-type is application/octet-stream,
+        # browser will offer to "save the file"...
+        # if you want to see reply in browser, uncomment next line
+        add_header Content-Type text/plain;
+
+        #proxy_pass http://example.org; #for demo purposes
+    }
+
+    ssl_certificate /etc/letsencrypt/live/YOUR_SERVER_NAME/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/YOUR_SERVER_NAME/privkey.pem;
+
+    include /etc/letsencrypt/options-ssl-nginx.conf;
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
+}
